@@ -22,8 +22,9 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onEvent(AudioEvent event) {
+
+
         if (event instanceof TrackExceptionEvent) {
-            System.out.println("Restarting Audio for " + this.instance.getGuild().getName() + " " + this.instance.getGuild().getId());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -31,7 +32,6 @@ public class TrackScheduler extends AudioEventAdapter {
                 }
             }, 1000 * 5);
         } else if (event instanceof TrackStuckEvent) {
-            System.out.println("Restarting Audio for " + this.instance.getGuild().getName() + " " + this.instance.getGuild().getId());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -41,7 +41,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else if (event instanceof TrackStartEvent) {
             System.out.println("Starting Track for " + guild.getName() + "\n");
         } else {
-            System.out.println("AudioEvent: " + event + " for " + guild.getName());
+
         }
     }
 }

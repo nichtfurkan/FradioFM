@@ -1,7 +1,6 @@
 package de.furkan.fradiofm.commands;
 
 import com.jagrosh.jdautilities.command.SlashCommand;
-import de.furkan.fradiofm.instance.Mode;
 import de.furkan.fradiofm.instance.ServerInstance;
 import de.furkan.fradiofm.main.Main;
 import net.dv8tion.jda.api.Permission;
@@ -22,35 +21,45 @@ public class Custom extends SlashCommand {
     public Custom() {
         this.name = "custom";
         this.help = "Lets you play your own Radio Channel.";
-        this.options = Collections.singletonList(new OptionData(OptionType.STRING, "radio-mp3-url", "Specifies the Radio URL that the bot will listen to.").setRequired(true));
+        this.options = Collections.singletonList(new OptionData(OptionType.STRING, "radio-mp3-or-youtube-twitch-url", "Specifies the Radio URL that the bot will listen to.").setRequired(true));
 
         this.category = new Category("command");
-        this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
+        this.botMissingPermMessage = "Looks like i don't have any Permissions for that Command :(";
         this.guildOnly = true;
         this.cooldown = 5;
         this.ownerCommand = false;
     }
-
     @Override
     protected void execute(SlashCommandEvent event) {
+
         ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName());
+            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " Custom");
             return;
         }
-        System.out.println("Custom for " + instance.getGuild().getName());
-        if (!instance.getMode().equals(Mode.READY_MODE)) {
-            return;
-        }
+        System.out.println("Custom for " + instance.getGuild().getName() + " by " + event.getMember().getUser().getAsTag() + " " + event.getOption("radio-mp3-or-youtube-twitch-url").getAsString());
+
         if (hasPermissions(event.getMember())) {
-            OptionMapping option = event.getOption("radio-mp3-url");
-            if (!this.checkOnline(option.getAsString())) {
-                event.reply("This URL is not online.\n**" + option.getAsString() + "**").queue();
+
+
+            OptionMapping option = event.getOption("radio-mp3-or-youtube-twitch-url");
+            if (option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("youtube.com/watch?v=") || option.getAsString().contains("youtu.be")) {
+                event.reply("Trying to play a Youtube Livestream URL\n").queue();
+                instance.playCustom(option.getAsString(), true,false);
+                instance.setWritableChannel(event.getTextChannel());
+            } else if(option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("twitch.tv/")) {
+                event.reply("Trying to play a Twitch Livestream URL\n").queue();
+                instance.playCustom(option.getAsString(), false,true);
+                instance.setWritableChannel(event.getTextChannel());
+            } else if (option.getAsString().contains("localhost") || option.getAsString().contains("127.0.0.1")) {
+                event.reply("Sorry but that isn't allowed here.\nFor more information please join the Official Discord Server and get Support.\nhttps://discord.gg/4pwp72s62c").queue();
                 return;
             } else {
                 event.reply("Trying to play a Custom URL\n").queue();
-                instance.playCustom(option.getAsString());
+                instance.playCustom(option.getAsString(), false,false);
+                instance.setWritableChannel(event.getTextChannel());
             }
+
         } else {
             event.reply("Looks like you dont have any Permissions for that.").queue();
         }
@@ -63,20 +72,5 @@ public class Custom extends SlashCommand {
         return PermissionUtil.checkPermission(member, Permission.ADMINISTRATOR) || isRadioAdmin.get() || member.getId().equals("853251098189627442");
     }
 
-    private boolean checkOnline(String host) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(host).openConnection();
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-            connection.setRequestMethod("HEAD");
-            int responseCode = connection.getResponseCode();
-            if (responseCode == 200) {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        return false;
-    }
 
 }

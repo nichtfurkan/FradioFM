@@ -3,18 +3,20 @@ package de.furkan.fradiofm.commands;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import de.furkan.fradiofm.instance.ServerInstance;
 import de.furkan.fradiofm.main.Main;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
+import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Join extends SlashCommand {
+public class Privacy extends SlashCommand {
 
-    public Join() {
-        this.name = "join";
-        this.help = "Lets the Bot join the first Voice Channel where it has Permission to.";
+    public Privacy() {
+        this.name = "privacy";
+        this.help = "Lets you see the Privacy Policy.";
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
 
@@ -26,32 +28,20 @@ public class Join extends SlashCommand {
     @Override
     protected void execute(SlashCommandEvent event) {
 
-        ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
+        ServerInstance instance = Main.getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " join");
+            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " privacy");
             return;
         }
-        System.out.println("Join for " + instance.getGuild().getName());
+        System.out.println("Policy for " + instance.getGuild().getName());
 
         if (hasPermissions(event.getMember())) {
-            if (instance.getGuild().getAudioManager().isConnected()) {
-
-                event.reply("Already connected to Voice Channel `" + instance.getGuild().getAudioManager().getConnectedChannel().getName() + "`").queue();
-                return;
-            }
-            String voice = instance.joinLeastVoice();
-            if (voice != null) {
-
-                event.reply("Joining Voice `" + voice + "`").queue();
-                instance.setWritableChannel(event.getTextChannel());
-            } else {
-
-                event.reply("Can't join any Voice Channel. Do i have the right permissions?").queue();
-                instance.setWritableChannel(event.getTextChannel());
-            }
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setTitle("Privacy Policy");
+            builder.setColor(Color.BLUE);
+            builder.setDescription("\n**What Data are we collecting**\nWe are collecting data for Troubleshooting\n\n**We are collectiong following data**\n- Radio Channel that is being played (URL)\n- Message Channel where the Bot got Commands (ID)\n- Last Joined VoiceChannel (ID)\n- Discord Server ID and Name (For better orientation in the Database)\n**No Data is being sold or given to any Third-Party**\n\nThe Data collection can be disabled by messaging **Furkan.#4554** to do so.\nIf you want to delete your Data in the Database also contact **Furkan.#4554**.");
+            event.replyEmbeds(builder.build()).queue();
         } else {
-
-
             event.reply("Looks like you dont have any Permissions for that.").queue();
         }
     }

@@ -1,7 +1,6 @@
 package de.furkan.fradiofm.commands;
 
 import com.jagrosh.jdautilities.command.SlashCommand;
-import de.furkan.fradiofm.instance.Mode;
 import de.furkan.fradiofm.instance.ServerInstance;
 import de.furkan.fradiofm.main.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -11,7 +10,10 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,13 +35,11 @@ public class ListRadio extends SlashCommand {
 
         ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName());
+            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " listradio");
             return;
         }
         System.out.println("All Radios for " + instance.getGuild().getName());
-        if (!instance.getMode().equals(Mode.READY_MODE)) {
-            return;
-        }
+
         if (hasPermissions(event.getMember())) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setColor(Color.BLUE);
@@ -50,8 +50,7 @@ public class ListRadio extends SlashCommand {
             HashMap<Integer, String[]> radioList = new HashMap<>();
             int tempId = 0;
             try {
-                InputStream in = getClass().getResourceAsStream("/radios.txt");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Furkan\\Documents\\radios.txt"));
                 String line = reader.readLine();
                 while (line != null) {
                     if (line.startsWith("#")) {

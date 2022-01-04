@@ -28,6 +28,7 @@ ALEX Berlin#http://alex-radio.rosebud-media.de:8000/alex-radio
 MIP Radio#http://stream.zeno.fm/1rk0tav4czzuv
 Radio Euskirchen#http://stream.lokalradio.nrw/444z7bv
 NDR 1#http://icecast.ndr.de/ndr/ndr1radiomv/greifswald/mp3/128/stream.mp3?aggregator=vtuner
+KissFM#https://topradio-de-hz-fal-stream06-cluster01.radiohost.de/kissfm_mp3-192?amsparams=internetradio&listenerrmid=31363338363338363639-323030333a66353a646631323a656136643a376362663a653830623a366239613a316562-3333303238-4d6f7a696c6c612f352e30202857696e646f7773
 
 #English
 All News All The Time#http://stream.radioinfoweb.net:8000/news
