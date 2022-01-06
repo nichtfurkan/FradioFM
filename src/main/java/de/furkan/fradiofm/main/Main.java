@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -182,24 +183,7 @@ public class Main implements EventListener {
             }*/
         } else if (command.startsWith("list")) {
 
-        /*   for(ServerInstance instance : instances) {
-
-                   try {
-
-                       System.out.println(instance.getGuild().getName());
-                       EmbedBuilder builder = new EmbedBuilder();
-                       builder.setTitle("**FradioFM Youtube Update**");
-                     builder.setColor(Color.BLUE);
-                       instance.getWritableChannel().sendMessage(builder.build()).queue();
-                       System.out.println("Sent to " + instance.getGuild().getName());
-
-                   } catch (Exception e) {
-
-                       System.out.println("Failed to send message alert!");
-                   }
-
-           }*/
-//       builder.setDescription("**We now Support Youtube Livestreams!**\nYes you read right you can now use **/Custom YOUTUBE_URL** to play a Livestream.\nThis only works with Youtube Livestreams and not with Videos!\n\n**Since this feature is still in Beta beware that sometimes something can crash!**\n Habt weiterhin Spaﬂ mit FradioFM / Have fun with FradioFM");
+   //     notfiy();
 
             StringBuilder builder = new StringBuilder();
             AtomicInteger listeners = new AtomicInteger();
@@ -291,6 +275,27 @@ public class Main implements EventListener {
             }
         }
         handleCommand(scanner);
+    }
+
+    private static void notfiy() {
+        for(ServerInstance instance : instances) {
+
+            try {
+
+                System.out.println(instance.getGuild().getName());
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("**FradioFM is switching sides**");
+                builder.setDescription("**We are switching sides!**\nThe Bot might be offline for a few hours while we are switching our host.\n\nIf you want to get notified when the Bot goes online join the official Discord server.");
+                builder.setColor(Color.BLUE);
+                instance.getWritableChannel().sendMessageEmbeds(builder.build()).queue();
+                System.out.println("Sent to " + instance.getGuild().getName());
+
+            } catch (Exception e) {
+
+                System.out.println("Failed to send message alert!");
+            }
+
+        }
     }
 
     public static ServerInstance getInstanceByGuild(Guild guild) {

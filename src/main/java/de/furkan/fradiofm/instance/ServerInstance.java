@@ -85,12 +85,10 @@ public class ServerInstance {
     private boolean connectJedis() {
         try {
 
-
-
-            jedis = new Jedis("localhost", 6372);
+            jedis = new Jedis("faphook.ddns.net", 6372);
             this.jedis.connect();
             this.jedis.ping();
-            System.out.println("Connected Redis for " + guild.getName());
+            System.out.println("Connected Redis for " + guild.getName() + " - " + guild.getId());
 
             if(this.guild.getName().contains("m1chh")) {
                 System.out.println("Delete m1chh");
@@ -98,7 +96,7 @@ public class ServerInstance {
                 this.delete();
             }
 
-            boolean isValid = this.getValue("mode") != null && this.getValue("wchannel") != null && this.getValue("radiourl") != null;
+            boolean isValid = this.getValue("wchannel") != null && this.getValue("radiourl") != null;
             if (!isValid) {
                 this.sendSetupMessage();
             } else {
@@ -143,6 +141,7 @@ public class ServerInstance {
                 }
             }, 1000 * 10);
             return false;
+
         }
     }
 
@@ -208,72 +207,73 @@ public class ServerInstance {
     }
 
     private void sendSetupMessage() {
-        EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setColor(Color.BLUE);
-        builder.setTitle("Welcome, " + this.guild.getName());
-        builder.setDescription("**Hey**\nMy name is **FradioFM** but you can also call me **Fred**\nMy purpose is to play great Radio Channel's at your Discord Server.\n"
-                + "\nYou can use **/Join** To let me Join a Voice Channel\nor **/Change ID** To change the Radio Channel.\nYou can use **/Radios** to get a list of all available Radios and their ID's\nor **/Custom URL** to play a Custom Radio.\n**/Suggest** To suggest a Radio that will be added to the Official List\n**/Privacy** To see our Privacy Policy\n**/Volume (1 - 1000)** To change the Volume.\n\nYou can move the Bot in any other Voice Channel and it will stay there forever.\n\nIf you want to give other People the permissions to use me\nJust create a Role with the name `RadioAdmin`\nAnd i will listen to them.\n\n**For Support please join the Official Discord Server**\nhttps://discord.gg/4pwp72s62c");
-        builder.setFooter("Made in Germany. By Furkan.#4554");
-        boolean added = false;
-        for (TextChannel channel : this.guild.getTextChannels()) {
-            if (this.guild.getName().equals("Scamscape")) {
-                channel = this.guild.getTextChannelById("887444364924690513");
-            }
+            EmbedBuilder builder = new EmbedBuilder();
 
-            try {
-                channel.sendMessageEmbeds(builder.build()).queue();
-                //         channel.sendMessage().queue();
-                EmbedBuilder embedBuilder = new EmbedBuilder();
-                embedBuilder.setColor(Color.BLUE);
-                embedBuilder.setAuthor("Playing Now!");
-                embedBuilder.setTitle("BigFM - Deutschland");
-                embedBuilder.setDescription("\nThis is playing by Default.\nUse **/Change ID** To change the Radio Channel!");
-                System.out.println("Sending default message for " + guild.getName());
-                // channel.sendMessage(embedBuilder.build()).queue();
-                channel.sendMessageEmbeds(embedBuilder.build()).queue();
-                added = true;
-                System.out.println("Sent default message for " + guild.getName());
-                setWritableChannel(channel);
-                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
-
-                String voice = this.joinLeastVoice();
-                if (voice == null) {
-                    System.out.println("Found no voice message.");
-                    channel.sendMessage("Can't join any Voice Channel. Do i have the right permissions?\nRetry with **/Join**").queue();
-                } else {
-                    channel.sendMessage("Joining Voice `" + voice + "`").queue();
+            builder.setColor(Color.BLUE);
+            builder.setTitle("Welcome, " + this.guild.getName());
+            builder.setDescription("**Hey**\nMy name is **FradioFM** but you can also call me **Fred**\nMy purpose is to play great Radio Channel's at your Discord Server.\n"
+                    + "\nYou can use **/Join** To let me Join a Voice Channel\nor **/Change ID** To change the Radio Channel.\nYou can use **/Radios** to get a list of all available Radios and their ID's\nor **/Custom URL** to play a Custom Radio.\n**/Suggest** To suggest a Radio that will be added to the Official List\n**/Privacy** To see our Privacy Policy\n**/Volume (1 - 1000)** To change the Volume.\n\nYou can move the Bot in any other Voice Channel and it will stay there forever.\n\nIf you want to give other People the permissions to use me\nJust create a Role with the name `RadioAdmin`\nAnd i will listen to them.\n\n**For Support please join the Official Discord Server**\nhttps://discord.gg/4pwp72s62c");
+            builder.setFooter("Made in Germany. By Furkan.#4554");
+            boolean added = false;
+            for (TextChannel channel : this.guild.getTextChannels()) {
+                if (this.guild.getName().equals("Scamscape")) {
+                    channel = this.guild.getTextChannelById("887444364924690513");
                 }
 
+                try {
+                    channel.sendMessageEmbeds(builder.build()).queue();
+                    //         channel.sendMessage().queue();
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setColor(Color.BLUE);
+                    embedBuilder.setAuthor("Playing Now!");
+                    embedBuilder.setTitle("BigFM - Deutschland");
+                    embedBuilder.setDescription("\nThis is playing by Default.\nUse **/Change ID** To change the Radio Channel!");
+                    System.out.println("Sending default message for " + guild.getName());
+                    // channel.sendMessage(embedBuilder.build()).queue();
+                    channel.sendMessageEmbeds(embedBuilder.build()).queue();
+                    added = true;
+                    System.out.println("Sent default message for " + guild.getName());
+                    setWritableChannel(channel);
+                    setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        playRadio();
+                    String voice = this.joinLeastVoice();
+                    if (voice == null) {
+                        System.out.println("Found no voice message.");
+                        channel.sendMessage("Can't join any Voice Channel. Do i have the right permissions?\nRetry with **/Join**").queue();
+                    } else {
+                        channel.sendMessage("Joining Voice `" + voice + "`").queue();
                     }
-                }, 1000 * 5);
 
 
-                return;
-            } catch (Exception e) {
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            playRadio();
+                        }
+                    }, 1000 * 5);
+
+
+                    return;
+                } catch (Exception e) {
+
+                }
 
             }
-
-        }
-        if (!added) {
-            System.out.println("No textchannels tested");
-            setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
-            this.joinLeastVoice();
-            playRadio();
-            return;
-        }
-        if (this.guild.getTextChannels().size() == 0) {
-            System.out.println("No Textchannels");
-            setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
-            this.joinLeastVoice();
-            playRadio();
-            return;
-        }
+            if (!added) {
+                System.out.println("No textchannels tested");
+                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
+                this.joinLeastVoice();
+                playRadio();
+                return;
+            }
+            if (this.guild.getTextChannels().size() == 0) {
+                System.out.println("No Textchannels");
+                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
+                this.joinLeastVoice();
+                playRadio();
+                return;
+            }
     }
 
 
