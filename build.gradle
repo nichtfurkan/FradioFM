@@ -38,6 +38,8 @@ dependencies {
 
 }
 
+task stage(dependsOn: ['build', 'clean'])
+
 test {
     useJUnitPlatform()
 }
