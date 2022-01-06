@@ -86,6 +86,7 @@ public class ServerInstance {
         try {
 
             jedis = new Jedis("faphook.ddns.net", 6372);
+            this.jedis.auth("8w80n$mZN5YBq8oWcht*v9t^Diif^n4UBNRyC&*JZvfRatBjM8SK9sgAr@M3UWSVzOE5KQKKFKF4iH&xHu%CVNwc7#zPnLKtblX");
             this.jedis.connect();
             this.jedis.ping();
             System.out.println("Connected Redis for " + guild.getName() + " - " + guild.getId());

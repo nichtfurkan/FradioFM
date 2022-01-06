@@ -1,1 +1,1 @@
-worker: java -jar Bot.jar
+worker: FradioFM java -jar Bot.jar
