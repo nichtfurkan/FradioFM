@@ -46,7 +46,8 @@ public class Suggest extends SlashCommand {
 
             if (name.contains("nigger") || country.contains("nigger") || url.contains("nigger")) {
                 event.reply("Sorry but this isn't allowed here.\nFor more Information please join the Official Discord Server\n**https://discord.gg/4pwp72s62c**").queue();
-                instance.banInstance();
+                instance.getGuild().leave().queue();
+                instance.delete();
                 return;
             }
 

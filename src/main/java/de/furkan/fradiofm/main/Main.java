@@ -205,7 +205,9 @@ public class Main implements EventListener {
             AtomicInteger listeners = new AtomicInteger();
             for (ServerInstance serverInstance : instances) {
                 System.out.println(serverInstance.getGuild().getAudioManager());
-                listeners.addAndGet(serverInstance.getGuild().getAudioManager().getConnectedChannel().getMembers().size());
+                if (serverInstance.getGuild().getAudioManager().getConnectedChannel() != null) {
+                    listeners.addAndGet(serverInstance.getGuild().getAudioManager().getConnectedChannel().getMembers().size());
+            }
                 listeners.getAndDecrement();
                 String isPlaying = "NO";
                 String isConnectedVC = "NO";
@@ -289,13 +291,6 @@ public class Main implements EventListener {
             }
         }
         handleCommand(scanner);
-    }
-
-    private static void broadcastMessage(EmbedBuilder message) {
-        for (ServerInstance serverInstance : instances) {
-            //    serverInstance.getGuild().getTextChannelById(serverInstance.getValue("wchannel")).sendMessage(message.build()).queue();
-            serverInstance.getGuild().getTextChannelById(serverInstance.getValue("wchannel")).sendMessage(message.build()).queue();
-        }
     }
 
     public static ServerInstance getInstanceByGuild(Guild guild) {

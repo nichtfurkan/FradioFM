@@ -44,18 +44,18 @@ public class Custom extends SlashCommand {
 
             OptionMapping option = event.getOption("radio-mp3-or-youtube-twitch-url");
             if (option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("youtube.com/watch?v=") || option.getAsString().contains("youtu.be")) {
-                event.reply("Trying to play a Youtube Livestream URL\n").queue();
+                event.reply("**Trying to play a Youtube Livestream URL**").queue();
                 instance.playCustom(option.getAsString(), true,false);
                 instance.setWritableChannel(event.getTextChannel());
             } else if(option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("twitch.tv/")) {
-                event.reply("Trying to play a Twitch Livestream URL\n").queue();
+                event.reply("**Trying to play a Custom URL**\n`Twitch Streams take longer to load because we are trying to find a stable and quick route to the Stream.`\n`So please be patient`").queue();
                 instance.playCustom(option.getAsString(), false,true);
                 instance.setWritableChannel(event.getTextChannel());
             } else if (option.getAsString().contains("localhost") || option.getAsString().contains("127.0.0.1")) {
                 event.reply("Sorry but that isn't allowed here.\nFor more information please join the Official Discord Server and get Support.\nhttps://discord.gg/4pwp72s62c").queue();
                 return;
             } else {
-                event.reply("Trying to play a Custom URL\n").queue();
+                event.reply("**Trying to play a Custom URL**").queue();
                 instance.playCustom(option.getAsString(), false,false);
                 instance.setWritableChannel(event.getTextChannel());
             }
