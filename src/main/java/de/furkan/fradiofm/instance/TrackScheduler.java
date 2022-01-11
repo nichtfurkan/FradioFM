@@ -38,10 +38,6 @@ public class TrackScheduler extends AudioEventAdapter {
                     instance.playRadio();
                 }
             }, 1000 * 5);
-        } else if (event instanceof TrackStartEvent) {
-            System.out.println("Starting Track for " + guild.getName() + "\n");
-        } else {
-
         }
     }
 }

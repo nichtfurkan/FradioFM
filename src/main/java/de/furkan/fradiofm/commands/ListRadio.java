@@ -71,7 +71,7 @@ public class ListRadio extends SlashCommand {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            builder.setDescription("\nThe following Numbers are the IDs\n\n" + stringBuilder + "\n\nUse **/Change ID** to change the Radio!\nFor example use **/Change 0** to play the BigFM Radio!");
+            builder.setDescription("\nThe following Numbers are the IDs\n\nYou can also use **/Search** to let the Bot Search a Radio Station on the Internet.\n" + stringBuilder + "\n\nUse **/Change ID** to change the Radio!\nFor example use **/Change 0** to play the BigFM Radio!");
             event.replyEmbeds(builder.build()).queue();
             instance.setWritableChannel(event.getTextChannel());
         } else {

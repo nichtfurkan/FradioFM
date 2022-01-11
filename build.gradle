@@ -33,8 +33,11 @@ dependencies {
     implementation 'com.github.walkyst:lavaplayer-fork:1.3.97'
     implementation group: 'com.google.api-client', name: 'google-api-client-jackson2', version: '1.20.0'
     implementation group: 'redis.clients', name: 'jedis', version: '3.7.0'
-
+    implementation 'com.iheartradio.m3u8:open-m3u8:0.2.4'
     implementation 'pw.chew:jda-chewtils:1.23.0'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation "de.sfuhrm:radiobrowser4j:2.2.1"
 
 }
 

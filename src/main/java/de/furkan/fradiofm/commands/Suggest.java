@@ -72,7 +72,7 @@ public class Suggest extends SlashCommand {
 
                         message.addReaction("U+274C").queue();
                     });
-                    event.reply("Suggestion successfully delivered.\nPlease beware that Spamming this feature or Suggesting anything rude/disturbing\nwill result in a **Lifetime Server-Ban**\n\nThe Suggestion is in the Radio-Suggestions Channel on the Official Discord Server.\nThere you can see if it has been accepted or not.").queue();
+                    event.reply("Suggestion successfully delivered.\nPlease beware that Spamming this feature or Suggesting anything rude/disturbing\nwill result in a **Lifetime Server-Ban**\n\nThe Suggestion is in the Radio-Suggestions Channel on the Official Discord Server.").queue();
                 }
             }
         } else {

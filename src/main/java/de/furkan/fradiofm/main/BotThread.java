@@ -4,6 +4,7 @@ import de.furkan.fradiofm.instance.ServerInstance;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BotThread implements Runnable {
@@ -14,6 +15,9 @@ public class BotThread implements Runnable {
     int threadID;
 
 
+    ArrayList<ServerInstance> arrayList = new ArrayList<>();
+
+
     public BotThread(JDA jda, List<Guild> guilds, int threadID) {
         this.jda = jda;
         this.guilds = guilds;
@@ -21,15 +25,26 @@ public class BotThread implements Runnable {
         this.thread = new Thread(this, "BotThread");
         this.thread.start();
         this.thread.setName("BotThread-" + this.thread.getId());
-        System.out.println("\nStarting Bot Thread " + this.thread.getId() + "  with " + guilds.size() + " Servers");
+        System.out.println("Starting Bot Thread " + this.thread.getId() + "  with " + guilds.size() + " Servers");
+    }
+
+    public void shutdownThread() {
+        for (ServerInstance serverInstance : arrayList) {
+            serverInstance.shutdown();
+        }
     }
 
     @Override
     public void run() {
         this.guilds.forEach(element -> {
-
-            Main.instances.add(new ServerInstance(jda, element, threadID));
-            //   System.out.println("Would create new instance for " + element.getName() + " with Bid " + this.thread.getId());
+            ServerInstance serverInstance = new ServerInstance(jda, element, threadID);
+            arrayList.add(serverInstance);
+            Main.instances.add(serverInstance);
+            try {
+                this.thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
     }
 }

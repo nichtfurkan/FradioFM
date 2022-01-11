@@ -11,8 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,7 +19,7 @@ public class Custom extends SlashCommand {
     public Custom() {
         this.name = "custom";
         this.help = "Lets you play your own Radio Channel.";
-        this.options = Collections.singletonList(new OptionData(OptionType.STRING, "radio-mp3-or-youtube-twitch-url", "Specifies the Radio URL that the bot will listen to.").setRequired(true));
+        this.options = Collections.singletonList(new OptionData(OptionType.STRING, "radio-mp3-or-twitch-url", "Specifies the Radio URL that the bot will listen to.").setRequired(true));
 
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i don't have any Permissions for that Command :(";
@@ -37,26 +35,22 @@ public class Custom extends SlashCommand {
             System.out.println("Instance not found for Server. " + event.getGuild().getName() + " Custom");
             return;
         }
-        System.out.println("Custom for " + instance.getGuild().getName() + " by " + event.getMember().getUser().getAsTag() + " " + event.getOption("radio-mp3-or-youtube-twitch-url").getAsString());
+        System.out.println("Custom for " + instance.getGuild().getName() + " by " + event.getMember().getUser().getAsTag() + " " + event.getOption("radio-mp3-or-youtube-url").getAsString());
 
         if (hasPermissions(event.getMember())) {
 
 
-            OptionMapping option = event.getOption("radio-mp3-or-youtube-twitch-url");
+            OptionMapping option = event.getOption("radio-mp3-or-youtube-url");
             if (option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("youtube.com/watch?v=") || option.getAsString().contains("youtu.be")) {
                 event.reply("**Trying to play a Youtube Livestream URL**").queue();
-                instance.playCustom(option.getAsString(), true,false);
-                instance.setWritableChannel(event.getTextChannel());
-            } else if(option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("twitch.tv/")) {
-                event.reply("**Trying to play a Custom URL**\n`Twitch Streams take longer to load because we are trying to find a stable and quick route to the Stream.`\n`So please be patient`").queue();
-                instance.playCustom(option.getAsString(), false,true);
+                instance.playCustom(option.getAsString(), true);
                 instance.setWritableChannel(event.getTextChannel());
             } else if (option.getAsString().contains("localhost") || option.getAsString().contains("127.0.0.1")) {
                 event.reply("Sorry but that isn't allowed here.\nFor more information please join the Official Discord Server and get Support.\nhttps://discord.gg/4pwp72s62c").queue();
                 return;
             } else {
                 event.reply("**Trying to play a Custom URL**").queue();
-                instance.playCustom(option.getAsString(), false,false);
+                instance.playCustom(option.getAsString(), false);
                 instance.setWritableChannel(event.getTextChannel());
             }
 
