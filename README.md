@@ -11,3 +11,6 @@ Also it consumes time that i don't have.
 Just open the Project in IntelIJ (or Eclipse) and download the Gradle files.
 After that add your Token to the **Main.java** and run.
 
+## Reporting Bugs
+Bugs can be reported by opening a issue. Or create a Fork.
+
