@@ -9,7 +9,7 @@ Also it consumes time that i don't have.
 
 ## How to Build **FradioFM**
 Just open the Project in IntelIJ (or Eclipse) and download the Gradle files.
-After that add your Token and Redis Database connection to the **Main.java** and run.
+After that add your Token and Redis Database connection and run.
 
 ## Reporting Bugs
 Bugs can be reported by opening a issue. Or create a Fork.
