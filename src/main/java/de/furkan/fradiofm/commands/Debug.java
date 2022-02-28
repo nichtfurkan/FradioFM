@@ -5,21 +5,16 @@ import de.furkan.fradiofm.instance.ServerInstance;
 import de.furkan.fradiofm.main.Main;
 import de.furkan.fradiofm.main.MemoryUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Debug extends SlashCommand {
 
     public Debug() {
         this.name = "debug";
-        this.help = "Lets you see the some Information";
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
-
         this.guildOnly = true;
         this.cooldown = 5;
         this.ownerCommand = false;
@@ -27,63 +22,20 @@ public class Debug extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-
         ServerInstance instance = Main.getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " debug");
             return;
         }
-        System.out.println("Debug for " + instance.getGuild().getName());
-
-        EmbedBuilder builder1 = new EmbedBuilder();
-        builder1.setTitle("Debug Information");
-        builder1.setColor(Color.BLUE);
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Debug Information");
+        embedBuilder.setColor(Color.BLUE);
         int thread = instance.getThread();
         String playerState = "RUNNING";
         if (instance.getPlayer().getPlayingTrack() == null && instance.getPlayer().isPaused()) {
             playerState = "STOPPED";
         }
-        builder1.setDescription("BotThread: `" + thread + "`\n" + "Player-State: `" + playerState + "`\nMessage-Channel: `" + instance.getWritableChannel().getId() + "`\nVoice-Channel: `" + instance.getLastChannel().getId() + "`\nDB: `1`\n" + MemoryUtils.getMemoryInfo());
-
-        event.replyEmbeds(builder1.build()).queue();
-        if (event.getGuild().getId().equals("912552900507615243")) {
-
-            StringBuilder builder = new StringBuilder();
-            AtomicInteger listeners = new AtomicInteger();
-            for (ServerInstance serverInstance : Main.instances) {
-                if (serverInstance.getGuild().getAudioManager().getConnectedChannel() != null) {
-                    listeners.addAndGet(serverInstance.getGuild().getAudioManager().getConnectedChannel().getMembers().size());
-                }
-                listeners.getAndDecrement();
-                String isPlaying = "NO";
-                String isConnectedVC = "NO";
-                if (serverInstance.getPlayer().getPlayingTrack() != null) {
-                    isPlaying = "YES";
-                }
-                if (serverInstance.getGuild().getAudioManager().isConnected()) {
-                    isConnectedVC = "YES";
-                }
-                String a = "NULL";
-                try {
-                    a = serverInstance.getPlayer().getPlayingTrack().getInfo().title + " - " + serverInstance.getPlayer().getPlayingTrack().getInfo().author;
-                } catch (Exception e) {
-
-                }
-                builder.append(serverInstance.getGuild().getName() + " - " + serverInstance.getGuild().getId() + "\nIsPlaying " + isPlaying + "\nIsConnectedVC " + isConnectedVC + " \n" + a + "\n\n");
-            }
-            ArrayList<String> list = new ArrayList<>();
-            ArrayList<Guild> guilds = new ArrayList<>();
-            for (ServerInstance serverInstance : Main.instances) {
-                guilds.add(serverInstance.getGuild());
-            }
-            for (Guild guild : Main.getInstance().getJda().getGuilds()) {
-                if (!guilds.contains(guild)) {
-                    list.add(guild.getName() + " - " + guild.getId());
-                }
-            }
-            System.out.println(builder + "\n\nI am in " + Main.getInstance().getJda().getGuilds().size() + " servers\nwith " + listeners.get() + " listeners and " + Main.getInstance().getInstances().size() + " instances\nThere are " + list.size() + " Servers with no instance: " + list);
-
-        }
+        embedBuilder.setDescription("BotThread: `" + thread + "`\n" + "Player-State: `" + playerState + "`\nMessage-Channel: `" + instance.getWritableChannel().getId() + "`\nVoice-Channel: `" + instance.getLastChannel().getId() + "`\n" + MemoryUtils.getMemoryInfo() + "\nLogic-Cores: `" + Runtime.getRuntime().availableProcessors() + "`\nOS: `" + System.getProperty("os.name") + "`");
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 
 }

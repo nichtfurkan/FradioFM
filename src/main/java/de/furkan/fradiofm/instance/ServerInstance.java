@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -35,6 +34,7 @@ public class ServerInstance {
     private VoiceChannel lastChannel;
     private String radioUrl;
     int thread;
+
 
 
     public ServerInstance(JDA jda, Guild guild, int thread) {
@@ -67,7 +67,6 @@ public class ServerInstance {
         return player;
     }
 
-
     public TextChannel getWritableChannel() {
         return writableChannel;
     }
@@ -79,63 +78,53 @@ public class ServerInstance {
 
     private boolean startInstance() {
         try {
-
-            jedis = new Jedis("localhost", 6372);
-            this.jedis.auth("8w80n$mZN5YBq8oWcht*v9t^Diif^n4UBNRyC&*JZvfRatBjM8SK9sgAr@M3UWSVzOE5KQKKFKF4iH&xHu%CVNwc7#zPnLKtblX");
+            System.out.println("Trying to connect to redis database for " + guild.getName());
+            jedis = new Jedis("localhost", 6379);
             this.jedis.connect();
             this.jedis.ping();
             System.out.println("Started Instance for " + guild.getName() + " - " + guild.getId() + " on thread " + thread);
-
-            if (this.guild.getName().contains("m1chh")) {
-                System.out.println("Delete m1chh");
-                this.guild.leave().queue();
-                this.delete();
-            }
-
             boolean isValid = this.getValue("wchannel") != null && this.getValue("radiourl") != null;
             if (!isValid) {
                 this.sendSetupMessage();
             } else {
                 this.writableChannel = this.guild.getTextChannelById(this.getValue("wchannel"));
+                this.radioUrl = this.getValue("radiourl");
+
                 if (this.getValue("lastchannel") != null) {
                     this.lastChannel = this.guild.getVoiceChannelById(this.getValue("lastchannel"));
                 }
-                this.radioUrl = this.getValue("radiourl");
+
                 if (this.radioUrl == null) {
                     this.radioUrl = "http://streams.bigfm.de/bigfm-deutschland-128-mp3";
                 }
                 this.setValue("name", this.guild.getName() + " - " + this.guild.getId());
                 playRadio();
             }
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                        try {
-                            jedis.ping();
-                        } catch (Exception e) {
-                            System.out.println("Connection lost for " + guild.getName() + " - " + guild.getId());
-                            new Timer().schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    startInstance();
-                                }
-                            }, 1000 * 10);
-                        }
+                    try {
+                        jedis.ping();
+                    } catch (Exception e) {
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                startInstance();
+                            }
+                        }, 1000 * 10);
+                    }
                 }
             }, 1000 * 30, 1000 * 30);
             return true;
         } catch (Exception e) {
-            System.out.println("Can't connect redis for " + this.guild.getName() + " - " + this.getGuild().getId());
+            System.out.println("An error has occurred: " + e.getMessage());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Reconnecting for " + guild.getName() + " - " + getGuild().getId());
                     startInstance();
                 }
-            }, 1000 * 10);
+            }, 1000 * 3);
             return false;
-
         }
     }
 
@@ -146,14 +135,13 @@ public class ServerInstance {
     }
 
     public void delete() {
-            System.out.println("Deleted for " + guild.getName());
-            this.deleteValue("mode");
-            this.deleteValue("lastchannel");
-            this.deleteValue("wchannel");
-            this.deleteValue("radiourl");
-            this.deleteValue("name");
-            Main.getInstance().getInstances().remove(this);
-            this.shutdown();
+        this.deleteValue("mode");
+        this.deleteValue("lastchannel");
+        this.deleteValue("wchannel");
+        this.deleteValue("radiourl");
+        this.deleteValue("name");
+        Main.getInstance().getInstances().remove(this);
+        this.shutdown();
     }
 
     public void setLastChannel(VoiceChannel lastChannel) {
@@ -202,9 +190,7 @@ public class ServerInstance {
     }
 
     private void sendSetupMessage() {
-
         EmbedBuilder builder = new EmbedBuilder();
-
         builder.setColor(Color.BLUE);
         builder.setTitle("Welcome, " + this.guild.getName());
         builder.setDescription("**Hey**\nMy name is **FradioFM** but you can also call me **Fred**\nMy purpose is to play great Radio Channel's at your Discord Server.\n"
@@ -216,168 +202,122 @@ public class ServerInstance {
                 channel.sendMessageEmbeds(builder.build()).queue();
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(Color.BLUE);
-                    embedBuilder.setAuthor("Playing Now!");
-                    embedBuilder.setTitle("BigFM - Deutschland");
-                    embedBuilder.setDescription("\nThis is playing by Default.\nUse **/Change ID** To change the Radio Channel!");
-                    channel.sendMessageEmbeds(embedBuilder.build()).queue();
-                    added = true;
-                    System.out.println("Sent default message for " + guild.getName());
-                    setWritableChannel(channel);
-                    setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
+                embedBuilder.setAuthor("Playing Now!");
+                embedBuilder.setTitle("BigFM - Deutschland");
+                embedBuilder.setDescription("\nThis is playing by Default.\nUse **/Change ID** To change the Radio Channel!");
+                channel.sendMessageEmbeds(embedBuilder.build()).queue();
+                channel.sendMessage("Hey, we are also offering a Coding Server where we Code Bots/Programs and also minecraft plugins that correspond to your wishes!\nIf you are interested you can join the Discord Server and open a order.\nhttps://discord.gg/dVPbDkwTDd").queue();
+                added = true;
+                System.out.println("Sent default message for " + guild.getName());
+                setWritableChannel(channel);
+                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
 
-                    String voice = this.joinLeastVoice();
-                    if (voice == null) {
-                        channel.sendMessage("Can't join any Voice Channel. Do i have the right permissions?\nRetry with **/Join**").queue();
-                    } else {
-                        channel.sendMessage("Joining Voice `" + voice + "`").queue();
-                    }
-
-
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            playRadio();
-                        }
-                    }, 1000 * 5);
-
-
-                    return;
-                } catch (Exception e) {
-
+                String voice = this.joinLeastVoice();
+                if (voice == null) {
+                    channel.sendMessage("Can't join any Voice Channel. Do i have the right permissions?\nRetry with **/Join**").queue();
+                } else {
+                    channel.sendMessage("Joining Voice `" + voice + "`").queue();
                 }
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        playRadio();
+                    }
+                }, 1000 * 5);
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            }
-            if (!added) {
-                System.out.println("No textchannels tested");
-                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
-                this.joinLeastVoice();
-                playRadio();
-                return;
-            }
-            if (this.guild.getTextChannels().size() == 0) {
-                System.out.println("No Textchannels");
-                setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
-                this.joinLeastVoice();
-                playRadio();
-                return;
-            }
+        }
+        if (!added) {
+            setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
+            this.joinLeastVoice();
+            playRadio();
+            return;
+        }
+        if (this.guild.getTextChannels().size() == 0) {
+            setRadioUrl(Main.getInstance().getRadioUtil().getRadioUrlById(0));
+            this.joinLeastVoice();
+            playRadio();
+            return;
+        }
     }
 
 
-    public void playCustom(String radioUrl, boolean isYoutube) {
-
+    public void playCustom(String radioUrl) {
         if (!this.guild.getAudioManager().isConnected()) {
             joinLeastVoice();
         }
-        String finalradioUrl = radioUrl;
-        if (isYoutube) {
-
-            this.manager.registerSourceManager(new YoutubeAudioSourceManager());
-            if (radioUrl.contains("youtu.be")) {
-                finalradioUrl = radioUrl.split("be/")[1];
-            } else {
-                if (finalradioUrl.contains("&")) {
-                    finalradioUrl = radioUrl.split("=")[1].split("&")[0];
-                } else {
-                    finalradioUrl = radioUrl.split("=")[1];
-                }
-
-            }
-        } else {
-
-            this.manager.registerSourceManager(new HttpAudioSourceManager());
-        }
-        this.manager.loadItem(finalradioUrl, new AudioLoadResultHandler() {
+        this.manager.registerSourceManager(new HttpAudioSourceManager());
+        this.manager.loadItem(radioUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (!track.getInfo().isStream && isYoutube) {
-                    writableChannel.sendMessage("**:octagonal_sign: Sorry but we only support Youtube/Mp3 Livestream URL's.**").queue();
-                    return;
-                } else {
-                    if (player.getPlayingTrack() != null) {
-                        player.stopTrack();
-                    }
-                    player.playTrack(track.makeClone());
-                    player.setVolume(15);
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
-                    embedBuilder.setColor(Color.BLUE);
-                    embedBuilder.setAuthor("Playing Now!");
-                    embedBuilder.setTitle(radioUrl);
-                    String author = track.getInfo().author.length() == 0 ? "Unknown." : track.getInfo().author;
-                    embedBuilder.setDescription("Author: `" + author + "`\n\nUse **/Change ID** To change the Radio Channel!");
-                    //writableChannel.sendMessage(embedBuilder.build()).queue();
-                    writableChannel.sendMessageEmbeds(embedBuilder.build()).queue();
-                    setRadioUrl(radioUrl);
-
+                if (player.getPlayingTrack() != null) {
+                    player.stopTrack();
                 }
+                player.playTrack(track.makeClone());
+                player.setVolume(15);
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(Color.BLUE);
+                embedBuilder.setAuthor("Playing Now!");
+                embedBuilder.setTitle(radioUrl);
+                String author = track.getInfo().author.length() == 0 ? "Unknown." : track.getInfo().author;
+                embedBuilder.setDescription("Author: `" + author + "`\n\nUse **/Change ID** To change the Radio Channel!");
+                writableChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+                setRadioUrl(radioUrl);
+
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File or to a valid Youtube Livestream").queue();
+                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File").queue();
             }
 
             @Override
             public void noMatches() {
-
-                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File or to a valid Youtube Livestream").queue();
+                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
                 exception.printStackTrace();
-                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File or to a valid Youtube Livestream").queue();
+                writableChannel.sendMessage("Cant play Radio with URL.\n**" + radioUrl + "**\nPlease make sure that the URL is pointing to a valid MP3 File").queue();
             }
         });
     }
 
     public void playRadio() {
+
         if (!this.guild.getAudioManager().isConnected()) {
             joinLeastVoice();
         }
         if (this.player.getPlayingTrack() != null) {
             this.player.stopTrack();
         }
-        String finalradioUrl = radioUrl;
 
-        if (this.radioUrl.contains("youtube.com/watch?v=")) {
-            this.manager.registerSourceManager(new YoutubeAudioSourceManager());
-            if (radioUrl.contains("&")) {
-                finalradioUrl = radioUrl.split("=")[1].split("&")[0];
-            } else {
-                finalradioUrl = radioUrl.split("=")[1];
-            }
-
-        } else {
-            this.manager.registerSourceManager(new HttpAudioSourceManager());
-        }
-
-        this.manager.loadItem(finalradioUrl, new AudioLoadResultHandler() {
+        this.manager.loadItem(radioUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 if (!track.getInfo().isStream) {
-                    System.out.println("No YTStream for " + guild.getName());
                     return;
                 }
+                System.out.println("Playing radio for " + guild.getName() + " " + radioUrl);
                 player.playTrack(track.makeClone());
                 player.setVolume(15);
-
-
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-
             }
 
             @Override
             public void noMatches() {
-
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-
+                System.out.println("Playing failed for " + guild.getName() + " " + exception.getMessage());
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -419,7 +359,6 @@ public class ServerInstance {
 
             }
         }
-        System.out.println("Found no Voice for " + this.guild.getName() + " - " + this.guild.getId());
         return null;
     }
 

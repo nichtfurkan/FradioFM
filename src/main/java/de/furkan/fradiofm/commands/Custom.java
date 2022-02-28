@@ -7,20 +7,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Custom extends SlashCommand {
 
     public Custom() {
         this.name = "custom";
-        this.help = "Lets you play your own Radio Channel.";
-        this.options = Collections.singletonList(new OptionData(OptionType.STRING, "radio-mp3-or-twitch-url", "Specifies the Radio URL that the bot will listen to.").setRequired(true));
-
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i don't have any Permissions for that Command :(";
         this.guildOnly = true;
@@ -29,36 +23,25 @@ public class Custom extends SlashCommand {
     }
     @Override
     protected void execute(SlashCommandEvent event) {
-
         ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " Custom");
             return;
         }
-        System.out.println("Custom for " + instance.getGuild().getName() + " by " + event.getMember().getUser().getAsTag() + " " + event.getOption("radio-mp3-or-youtube-url").getAsString());
-
         if (hasPermissions(event.getMember())) {
-
-
-            OptionMapping option = event.getOption("radio-mp3-or-youtube-url");
-            if (option.getAsString().startsWith("https://") && option.getAsString().split("https://")[1].contains("youtube.com/watch?v=") || option.getAsString().contains("youtu.be")) {
-                event.reply("**Trying to play a Youtube Livestream URL**").queue();
-                instance.playCustom(option.getAsString(), true);
-                instance.setWritableChannel(event.getTextChannel());
-            } else if (option.getAsString().contains("localhost") || option.getAsString().contains("127.0.0.1")) {
+            OptionMapping option = event.getOption("radio-mp3-url");
+            if (option.getAsString().contains("localhost") || option.getAsString().contains("127.0.0.1")) {
                 event.reply("Sorry but that isn't allowed here.\nFor more information please join the Official Discord Server and get Support.\nhttps://discord.gg/4pwp72s62c").queue();
                 return;
             } else {
                 event.reply("**Trying to play a Custom URL**").queue();
-                instance.playCustom(option.getAsString(), false);
+                instance.playCustom(option.getAsString());
                 instance.setWritableChannel(event.getTextChannel());
             }
 
         } else {
-            event.reply("Looks like you dont have any Permissions for that.").queue();
+            event.reply("Looks like you don't have any Permissions for that.").queue();
         }
     }
-
 
     private boolean hasPermissions(Member member) {
         AtomicBoolean isRadioAdmin = new AtomicBoolean(false);

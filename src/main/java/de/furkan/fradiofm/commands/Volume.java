@@ -7,19 +7,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Volume extends SlashCommand {
 
     public Volume() {
         this.name = "volume";
-        this.help = "Lets you change the Volume of the Bot.";
-        this.options = Collections.singletonList(new OptionData(OptionType.INTEGER, "volume", "Specifies the Volume. (1 - 1000)").setRequired(true));
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i don't have any Permissions for that Command :(";
         this.guildOnly = true;
@@ -32,11 +27,8 @@ public class Volume extends SlashCommand {
 
         ServerInstance instance = Main.getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " volume");
             return;
         }
-        System.out.println("Volume for " + instance.getGuild().getName() + " to " + event.getOption("volume").getAsString());
-
         if (hasPermissions(event.getMember())) {
             OptionMapping option = event.getOption("volume");
             int setVolume = Integer.parseInt(option.getAsString());

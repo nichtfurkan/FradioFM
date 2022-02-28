@@ -14,10 +14,8 @@ public class Join extends SlashCommand {
 
     public Join() {
         this.name = "join";
-        this.help = "Lets the Bot join the first Voice Channel where it has Permission to.";
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
-
         this.guildOnly = true;
         this.cooldown = 5;
         this.ownerCommand = false;
@@ -25,33 +23,24 @@ public class Join extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-
         ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " join");
             return;
         }
-        System.out.println("Join for " + instance.getGuild().getName());
-
         if (hasPermissions(event.getMember())) {
             if (instance.getGuild().getAudioManager().isConnected()) {
-
                 event.reply("Already connected to Voice Channel `" + instance.getGuild().getAudioManager().getConnectedChannel().getName() + "`").queue();
                 return;
             }
             String voice = instance.joinLeastVoice();
             if (voice != null) {
-
                 event.reply("Joining Voice `" + voice + "`").queue();
                 instance.setWritableChannel(event.getTextChannel());
             } else {
-
                 event.reply("Can't join any Voice Channel. Do i have the right permissions?").queue();
                 instance.setWritableChannel(event.getTextChannel());
             }
         } else {
-
-
             event.reply("Looks like you dont have any Permissions for that.").queue();
         }
     }

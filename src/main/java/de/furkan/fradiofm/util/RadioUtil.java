@@ -14,7 +14,7 @@ public class RadioUtil {
             HashMap<Integer, String> radioHashmap = new HashMap<>();
             int tempId = 0;
 
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Furkan\\Documents\\radios.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("radios.txt"));
             String url;
             String line = reader.readLine();
             while (line != null) {
@@ -35,29 +35,11 @@ public class RadioUtil {
         return null;
     }
 
-    public int getRadioCount() {
-        int times = 0;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Furkan\\Documents\\radios.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                if (line.contains("#") && !line.startsWith("#")) {
-                    times += 1;
-                }
-                line = reader.readLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        times -= 1;
-        return times;
-    }
-
     public String getRadioUrlById(int id) {
         try {
             HashMap<Integer, String> radioHashmap = new HashMap<>();
             int tempId = 0;
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Furkan\\Documents\\radios.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("radios.txt"));
             String url;
             String line = reader.readLine();
             while (line != null) {
@@ -79,8 +61,5 @@ public class RadioUtil {
 
         return null;
     }
-
-    // Soon.
-    // private String[] getAllRadios()
 
 }

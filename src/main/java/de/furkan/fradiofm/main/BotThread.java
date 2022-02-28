@@ -9,14 +9,12 @@ import java.util.List;
 
 public class BotThread implements Runnable {
 
-    JDA jda;
-    Thread thread;
-    List<Guild> guilds;
-    int threadID;
-
+    private final JDA jda;
+    private final Thread thread;
+    private final List<Guild> guilds;
+    private final int threadID;
 
     ArrayList<ServerInstance> arrayList = new ArrayList<>();
-
 
     public BotThread(JDA jda, List<Guild> guilds, int threadID) {
         this.jda = jda;
@@ -28,23 +26,12 @@ public class BotThread implements Runnable {
         System.out.println("Starting Bot Thread " + this.thread.getId() + "  with " + guilds.size() + " Servers");
     }
 
-    public void shutdownThread() {
-        for (ServerInstance serverInstance : arrayList) {
-            serverInstance.shutdown();
-        }
-    }
-
     @Override
     public void run() {
         this.guilds.forEach(element -> {
             ServerInstance serverInstance = new ServerInstance(jda, element, threadID);
             arrayList.add(serverInstance);
             Main.instances.add(serverInstance);
-            try {
-                this.thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         });
     }
 }

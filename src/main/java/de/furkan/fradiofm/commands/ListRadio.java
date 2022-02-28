@@ -21,7 +21,6 @@ public class ListRadio extends SlashCommand {
 
     public ListRadio() {
         this.name = "radios";
-        this.help = "Lists all the Radio Channels currently available.";
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
         this.guildOnly = true;
@@ -32,25 +31,21 @@ public class ListRadio extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-
         ServerInstance instance = Main.getInstance().getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " listradio");
             return;
         }
-        System.out.println("All Radios for " + instance.getGuild().getName());
-
         if (hasPermissions(event.getMember())) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setColor(Color.BLUE);
             builder.setTitle("List of all Available Radios.");
             builder.setFooter("Made in Germany. By Furkan.#4554");
             StringBuilder stringBuilder = new StringBuilder();
-
             HashMap<Integer, String[]> radioList = new HashMap<>();
+
             int tempId = 0;
             try {
-                BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Furkan\\Documents\\radios.txt"));
+                BufferedReader reader = new BufferedReader(new FileReader("radios.txt"));
                 String line = reader.readLine();
                 while (line != null) {
                     if (line.startsWith("#")) {
@@ -71,6 +66,7 @@ public class ListRadio extends SlashCommand {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             builder.setDescription("\nThe following Numbers are the IDs\n\nYou can also use **/Search** to let the Bot Search a Radio Station on the Internet.\n" + stringBuilder + "\n\nUse **/Change ID** to change the Radio!\nFor example use **/Change 0** to play the BigFM Radio!");
             event.replyEmbeds(builder.build()).queue();
             instance.setWritableChannel(event.getTextChannel());

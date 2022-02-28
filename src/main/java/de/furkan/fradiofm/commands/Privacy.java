@@ -16,10 +16,8 @@ public class Privacy extends SlashCommand {
 
     public Privacy() {
         this.name = "privacy";
-        this.help = "Lets you see the Privacy Policy.";
         this.category = new Category("command");
         this.botMissingPermMessage = "Looks like i dont have any Permissions for that Command :(";
-
         this.guildOnly = true;
         this.cooldown = 5;
         this.ownerCommand = false;
@@ -27,14 +25,10 @@ public class Privacy extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-
         ServerInstance instance = Main.getInstanceByGuild(event.getGuild());
         if (instance == null) {
-            System.out.println("Instance not found for Server. " + event.getGuild().getName() + " privacy");
             return;
         }
-        System.out.println("Policy for " + instance.getGuild().getName());
-
         if (hasPermissions(event.getMember())) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("Privacy Policy");
