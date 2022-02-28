@@ -59,7 +59,7 @@ public class Main {
         instance = new Main();
 
         try {
-            jda = JDABuilder.createLight("OTQxMzEzODIxNjg1OTk3NjI5.YgUIzw.RZuL2JT1j4lrvvQPVWcw53913bw", GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS).disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS).build().awaitReady();
+            jda = JDABuilder.createLight("", GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS).disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS).build().awaitReady();
             jda.getPresence().setPresence(OnlineStatus.ONLINE, false);
             jda.addEventListener(new Event());
             CommandListUpdateAction commands = jda.updateCommands();
