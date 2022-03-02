@@ -11,6 +11,11 @@ Also it consumes time that i don't have.
 Just open the Project in IntelIJ (or Eclipse) and download the Gradle files.
 After that add your Token and Redis Database connection and run.
 
+If you want to export the .JAR you cant use it on Windows beacuse the Lavaplayer cant play URL's on the Windows Operating System.
+The only workaround is to use the Linux Subsystem from Windows (Ubuntu).
+https://www.makeuseof.com/enable-windows-subsystem-for-linux/
+https://ubuntu.com/wsl
+
 ## Reporting Bugs
 Bugs can be reported by opening a issue. Or create a Fork.
 
